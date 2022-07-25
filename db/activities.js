@@ -7,13 +7,36 @@ async function createActivity({ name, description }) {
 
 async function getAllActivities() {
   // select and return an array of all activities
+  try {
+    const { rows: [activities] } = await client.query(`
+      SELECT id
+      FROM activities
+      WHERE id=$1;
+    `, []);
+
+    return activities;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
-async function getActivityById(id) {}
+async function getActivityById(id) {
+  try {
+    const { rows: [activities] } = await client.query(`
+      SELECT id
+      FROM activities
+      WHERE id=$1;
+    `, [id]);
 
-async function getActivityByName(name) {}
+    return activities;
+  } catch (error) {
+    console.error(error);
+  }
+}
 
-async function attachActivitiesToRoutines(routines) {}
+async function getActivityByName(name) { }
+
+async function attachActivitiesToRoutines(routines) { }
 
 async function updateActivity({ id, ...fields }) {
   // don't try to update the id
