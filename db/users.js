@@ -6,11 +6,13 @@ const bcrypt = require("bcrypt");
 // user functions
 async function createUser({ username, password }) {
   const SALT_COUNT = 10;
-  const hashedPassword = await bcrypt.hash(password, SALT_COUNT)
-  console.log(hashedPassword);
+  const hashedPassword = await bcrypt.hash(password, SALT_COUNT);
+  console.log("This is the password -->", hashedPassword);
 
   try {
-    const { rows: [user] } = await client.query(
+    const {
+      rows: [user],
+    } = await client.query(
       `
       INSERT INTO users(username, password)
       VALUES($1, $2)
@@ -19,27 +21,38 @@ async function createUser({ username, password }) {
       `,
       [username, hashedPassword]
     );
-    console.log(user, "Hello");
+    console.log(user, "<-- id, and username");
     return user;
   } catch (error) {
     console.error(error);
   }
-
 }
 
 async function getUser({ username, password }) {
-  const user = await getUserByUserName(username);
-  const hashedPassword = user.password;
-  // isValid will be a boolean based on wether the password matches the hashed password
-  const isValid = await bcrypt.compare(password, hashedPassword)
-  console.log(isValid);
+  try {
 
+    const user = await getUserByUsername(username);
+    const hashedPassword = user.password;
+    const isValid = await bcrypt.compare(password, hashedPassword);
+    console.log(user);
+    if (isValid) {
+      delete user.password
+      return user;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  // isValid will be a boolean based on wether the password matches the hashed password
 }
 
 async function getUserById(userId) {
   try {
-    const { rows: [user] } = await client.query(`
-      SELECT id, username, active
+    const {
+      rows: [user],
+    } = await client.query(`
+      SELECT id
       FROM users
       WHERE id=${userId}
     `);
@@ -50,16 +63,20 @@ async function getUserById(userId) {
   } catch (error) {
     console.error(error);
   }
-
 }
 
 async function getUserByUsername(userName) {
   try {
-    const { rows: [user] } = await client.query(`
-      SELECT username
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+      SELECT username, password
       FROM users
-      WHERE username=$1;
-    `, [userName]);
+      WHERE username=$1
+    `,
+      [userName]
+    );
 
     return user;
   } catch (error) {
@@ -72,4 +89,4 @@ module.exports = {
   getUser,
   getUserById,
   getUserByUsername,
-}
+};
