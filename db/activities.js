@@ -26,7 +26,7 @@ async function createActivity({ name, description }) {
 async function getAllActivities() {
   // select and return an array of all activities
   try {
-    const { rows: [activities] } = await client.query(`
+    const { rows: activities } = await client.query(`
       SELECT *
       FROM activities
     `, []);
@@ -40,11 +40,11 @@ async function getAllActivities() {
 async function getActivityById(id) {
   try {
     const { rows: [activities] } = await client.query(`
-      SELECT id
+      SELECT *
       FROM activities
       WHERE id=$1;
     `, [id]);
-
+    console.log(activities)
     return activities;
   } catch (error) {
     console.error(error);

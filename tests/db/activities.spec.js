@@ -39,9 +39,11 @@ describe("DB Activities", () => {
   });
 
   describe("getActivityById", () => {
-    xit("Gets activities by their id", async () => {
+    it("Gets activities by their id", async () => {
       const fakeActivity = await createFakeActivity("Crunches", "Do 40 reps");
+      console.log('this is fake',fakeActivity)
       const activity = await getActivityById(fakeActivity.id);
+      console.log('this is activity', activity)
       expect(activity.id).toEqual(fakeActivity.id);
       expect(activity.name).toEqual(fakeActivity.name);
       expect(activity.description).toEqual(fakeActivity.description);
