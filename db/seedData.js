@@ -220,7 +220,7 @@ async function rebuildDB() {
     await dropTables()
     await createTables()
     await createInitialUsers()
-    // await createInitialActivities()
+    await createInitialActivities()
     // await createInitialRoutines()
     // await createInitialRoutineActivities()
   } catch (error) {
