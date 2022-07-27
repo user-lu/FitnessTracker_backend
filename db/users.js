@@ -7,7 +7,6 @@ const bcrypt = require("bcrypt");
 async function createUser({ username, password }) {
   const SALT_COUNT = 10;
   const hashedPassword = await bcrypt.hash(password, SALT_COUNT);
-  console.log("This is the password -->", hashedPassword);
 
   try {
     const {
@@ -21,7 +20,6 @@ async function createUser({ username, password }) {
       `,
       [username, hashedPassword]
     );
-    console.log(user, "<-- id, and username");
     return user;
   } catch (error) {
     console.error(error);
@@ -34,7 +32,6 @@ async function getUser({ username, password }) {
     const user = await getUserByUsername(username);
     const hashedPassword = user.password;
     const isValid = await bcrypt.compare(password, hashedPassword);
-    console.log(user);
     if (isValid) {
       delete user.password
       return user;

@@ -5,7 +5,30 @@ async function addActivityToRoutine({
   activityId,
   count,
   duration,
-}) {}
+}) {
+  try {
+    const {
+      rows: [routine],
+    } = await client.query(
+      `
+        INSERT INTO routine_activities("routineId", "activityId", count, duration)
+        VALUES($1, $2, $3, $4)
+        ON CONFLICT ("activityId", "routineId") DO NOTHING
+        RETURNING *;
+        `,
+      [routineId,
+        activityId,
+        count,
+        duration]
+    );
+    console.log(routine, "NEW")
+    return routine;
+  
+  } catch (error) {
+    console.error(error, "this is addActivityToRoutine");
+  }
+
+}
 
 async function getRoutineActivityById(id) {}
 

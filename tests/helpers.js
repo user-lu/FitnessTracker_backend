@@ -159,6 +159,7 @@ const createFakeRoutineActivity = async (routineId, activityId) => {
     activityId = activity.id;
   }
   const fakeRoutineActivity = await addActivityToRoutine({
+    
     activityId,
     routineId,
     count: faker.random.number(),
