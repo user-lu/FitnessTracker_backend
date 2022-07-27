@@ -25,11 +25,34 @@ async function getRoutineById(id) { }
 async function getRoutinesWithoutActivities() { }
 
 async function getAllRoutines() { 
-  
+  try {
+    const { rows } = await client.query(`
+      SELECT routines.*, users.username AS "creatorName"
+      FROM routines
+      JOIN users ON routines."creatorId" = users.id;
+    `);
+    return attachActivitiesToRoutines(rows)
+  } catch (error) {
+    console.error(error)
+  }
 
 }
 
-async function getAllPublicRoutines() { }
+async function getAllPublicRoutines() { 
+  try {
+    const { rows } = await client.query(`
+      SELECT routines.*, users.username AS "creatorName"
+      FROM routines
+      JOIN users ON routines."creatorId" = users.id;
+    `);
+    console.log(rows, "PUBLIC")
+    delete rows.isPublic
+    return attachActivitiesToRoutines(rows)
+  } catch (error) {
+    console.error(error)
+  }
+
+}
 
 async function getAllRoutinesByUser({ username }) { }
 
