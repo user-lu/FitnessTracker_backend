@@ -21,7 +21,6 @@ async function addActivityToRoutine({
         count,
         duration]
     );
-    console.log(routine, "NEW")
     return routine;
   
   } catch (error) {
