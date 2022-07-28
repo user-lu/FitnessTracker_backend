@@ -84,7 +84,7 @@ function expectRoutinesNotToContainDuplicates(routines, fakeRoutine) {
 
 // Tests start here
 
-describe("DB Routines", () => {
+xdescribe("DB Routines", () => {
   let fakeUser,
     fakeRoutine,
     fakePrivateRoutine,
@@ -452,7 +452,7 @@ describe("DB Routines", () => {
     });
   });
 
-  describe("destroyRoutine", () => {
+  xdescribe("destroyRoutine", () => {
     it("removes routine from database", async () => {
       const fakeRoutine = await createFakePublicRoutine();
       await destroyRoutine(fakeRoutine.id);
