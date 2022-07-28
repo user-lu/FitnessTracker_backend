@@ -64,7 +64,8 @@ async function getAllRoutinesByUser({ username }) {
       SELECT routines.*, users.username AS "creatorName"
       FROM routines
       JOIN users ON routines."creatorId" = users.id
-    `);
+      WHERE username=$1;
+    `, [username]);
 
     return attachActivitiesToRoutines(rows)
 
@@ -76,14 +77,14 @@ async function getAllRoutinesByUser({ username }) {
 
 async function getPublicRoutinesByUser({ username }) { 
   try {
-    const { rows: routine } = await client.query(`
+    const { rows } = await client.query(`
       SELECT routines.*, users.username AS "creatorName"
       FROM routines
       JOIN users ON routines."creatorId" = users.id
-      WHERE username=$1;
+      WHERE "isPublic"=true AND username = $1;
     `, [username]);
 
-    return attachActivitiesToRoutines(routine)
+    return attachActivitiesToRoutines(rows)
 
   } catch (error) {
     console.error(error)
@@ -97,9 +98,9 @@ async function getPublicRoutinesByActivity({ id }) {
       SELECT routines.*, users.username AS "creatorName"
       FROM routines
       JOIN users ON routines."creatorId" = users.id
-      WHERE "isPublic" = true;
-    `);
-
+      JOIN routine_activities ON routine_activities."routineId" = routines.id
+      WHERE "isPublic" = true AND routine_activities."activityId"=$1;
+    `,[id]);
     return attachActivitiesToRoutines(rows)
 
   } catch (error) {
@@ -108,9 +109,49 @@ async function getPublicRoutinesByActivity({ id }) {
 
  }
 
-async function updateRoutine({ id, ...fields }) { }
+async function updateRoutine({ id, ...fields }) {
+  const setString = Object.keys(fields).map(
+    (key, index) => `"${key}"=$${index + 1}`
+  ).join(', ');
 
-async function destroyRoutine(id) { }
+  if (setString.length === 0) {
+    return;
+  }
+
+  try {
+    const { rows: [routine] } = await client.query(`
+  UPDATE routines
+  SET ${setString}
+  WHERE id=${id}
+  RETURNING *;
+`, Object.values(fields));
+
+    return routine;
+  } catch (error) {
+    console.error(error);
+  }
+ }
+
+async function destroyRoutine(id) {
+  try {
+     await client.query(`
+  DELETE
+  FROM routine_activities 
+  WHERE "routineId"=$1;
+
+`,[id]);
+
+  const {rows: [routine]} =await client.query(`
+  DELETE 
+  FROM routines
+  WHERE id=$1
+  RETURNING *;
+  `,[id])
+    return routine
+  } catch (error) {
+    console.error(error, "Unable to destroy routine")
+  }
+ }
 
 module.exports = {
   getRoutineById,
