@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const db = require('./db')
 
 // GET /api/health
 router.get('/health', async (req, res, next) => {
+    console.log('it is healthy')
 });
 
 // ROUTER: /api/users
