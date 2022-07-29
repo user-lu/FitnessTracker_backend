@@ -1,13 +1,13 @@
 /* eslint-disable no-useless-catch */
 const express = require("express");
-const usersRouter = express.Router();
 const jwt = require("jsonwebtoken");
 const router = express.Router();
+const JWT_SECRET = process.env
 
 const { getUserByUsername, createUser } = require("../db");
 
 // POST /api/users/register
-usersRouter.post("/register", async (req, res, next) => {
+router.post("/register", async (req, res, next) => {
     console.log("this is a console log")
   const { username, password } = req.body;
 
@@ -15,6 +15,7 @@ usersRouter.post("/register", async (req, res, next) => {
     const _user = await getUserByUsername(username);
 
     if (_user) {
+        res.status
       next({
         name: "UserExistsError",
         message: "A user by that username already exists.",
@@ -28,18 +29,17 @@ usersRouter.post("/register", async (req, res, next) => {
     const token = jwt.sign(
       {
         id: user.id,
-        username,
+        username: user.username,
       },
-      process.env.JWT_SECRET,
+      JWT_SECRET,
       {
         expiresIn: "1w",
       }
     );
-      console.log(token, "this is a token")
     res.send({
+        user,
       message: "thank you for signing up",
       token,
-      user
     });
   } catch ({ name, message }) {
     next({ name, message });
