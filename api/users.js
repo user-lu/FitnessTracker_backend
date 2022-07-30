@@ -92,6 +92,14 @@ router.post("/login", async (req, res, next) => {
 });
 
 // GET /api/users/me
+router.get('/me', async(req, res, next) =>{
+  try {
+    res.send(res.user)
+  } catch (error) {
+    console.error(error)
+    next(error)
+  }
+})
 
 // GET /api/users/:username/routines
 
