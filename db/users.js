@@ -68,7 +68,7 @@ async function getUserByUsername(userName) {
       rows: [user],
     } = await client.query(
       `
-      SELECT username, password
+      SELECT *
       FROM users
       WHERE username=$1
     `,
