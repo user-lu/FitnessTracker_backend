@@ -1,19 +1,16 @@
 /* eslint-disable no-useless-catch */
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const { JWT_SECRET } = process.env;
 const router = express.Router();
 
-const { 
-    getUserByUsername,
-     createUser 
-    } = require("../db");
+const { getUserByUsername, createUser } = require("../db");
 
 // POST /api/users/register
 router.post("/register", async (req, res, next) => {
-    
-    try {
-      const { username, password } = req.body;
+  try {
+    const { username, password } = req.body;
     const _user = await getUserByUsername(username);
 
     if (_user) {
@@ -63,46 +60,36 @@ router.post("/register", async (req, res, next) => {
   }
 });
 
-
 // POST /api/users/login
 router.post("/login", async (req, res, next) => {
-    const { username, password } = req.body;
-  
-    if (!username || !password) {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    next({
+      name: "MissingCredentialsError",
+      message: "Please supply both a username and password",
+    });
+  }
+
+  try {
+    const user = await getUserByUsername(username);
+    const hashedPassword = user.password;
+    const matchingPasswords = await bcrypt.compare(password, hashedPassword);
+    if (matchingPasswords) {
+      const token = jwt.sign(user, JWT_SECRET);
+      res.send({ user, message: "you're logged in!", token: `${token}` });
+    } else {
       next({
-        name: "MissingCredentialsError",
-        message: "Please supply both a username and password",
+        name: "IncorrectCredentialsError",
+        message: "Username or password is incorrect",
       });
     }
-  
-    try {
-      const user = await getUserByUsername(username);
-  
-      if (user && user.password == password) {
-        const token = jwt.sign(
-          { id: user.id, username },
-          JWT_SECRET,
-          {
-            expiresIn: "1w",
-          }
-        );
-  
-        res.send({ message: "you're logged in!", token: token });
-      } else {
-        next({
-          name: "IncorrectCredentialsError",
-          message: "Username or password is incorrect",
-        });
-      }
-    } catch (error) {
-      console.log(error);
-      next(error);
-    }
-    return
-  });
-
-
-
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+  return;
+});
 
 // GET /api/users/me
 
