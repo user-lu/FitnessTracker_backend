@@ -16,9 +16,9 @@ app.use('/api', require('./api'))
 //error handling goes here
 app.use((error, req, res, next) => {
     res.send({
+      error: error.message,
       name: error.name,
       message: error.message,
-      error: error.message
     });
   });
 

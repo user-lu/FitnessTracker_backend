@@ -5,7 +5,13 @@ const bcrypt = require("bcrypt");
 const { JWT_SECRET } = process.env;
 const router = express.Router();
 
-const { getUserByUsername, createUser } = require("../db");
+const { requireUser } = require("./utils");
+const {
+  getUserByUsername,
+  createUser,
+  getPublicRoutinesByUser,
+  getAllRoutinesByUser,
+} = require("../db");
 
 // POST /api/users/register
 router.post("/register", async (req, res, next) => {
@@ -77,7 +83,7 @@ router.post("/login", async (req, res, next) => {
     const matchingPasswords = await bcrypt.compare(password, hashedPassword);
     if (matchingPasswords) {
       const token = jwt.sign(user, JWT_SECRET);
-      res.send({ user, message: "you're logged in!", token: `${token}` });
+      res.send({ user, message: "you're logged in!", token: token });
     } else {
       next({
         name: "IncorrectCredentialsError",
@@ -88,18 +94,16 @@ router.post("/login", async (req, res, next) => {
     console.log(error);
     next(error);
   }
-  return;
 });
 
 // GET /api/users/me
-router.get('/me', async(req, res, next) =>{
+router.get("/me", requireUser, async (req, res, next) => {
   try {
-    res.send(res.user)
+    res.send(req.user);
   } catch (error) {
-    console.error(error)
-    next(error)
+    throw error;
   }
-})
+});
 
 // GET /api/users/:username/routines
 
