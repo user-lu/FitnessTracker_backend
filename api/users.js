@@ -106,5 +106,27 @@ router.get("/me", requireUser, async (req, res, next) => {
 });
 
 // GET /api/users/:username/routines
+router.get("/:username/routines", async (req, res, next) => {
+  const { username } = req.params;
+
+  try {
+    
+    const user = await getUserByUsername(username);
+    if (!user) {
+      next({
+        name: "NoUserFound",
+        message: "User does not exist",
+      });
+    }
+    if (req.user && user.id === req.user.id) {
+      const getUserRoutines = await getAllRoutinesByUser({ username });
+      res.send(getUserRoutines);
+    }
+      const publicRoutines = await getPublicRoutinesByUser({ username });
+      res.send(publicRoutines);
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = router;

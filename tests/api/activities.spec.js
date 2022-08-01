@@ -24,7 +24,7 @@ const { arrayContaining } = expect;
 
 const { getPublicRoutinesByActivity } = require("../../db");
 
-xdescribe("/api/activities", () => {
+describe("/api/activities", () => {
   describe("GET /api/activities", () => {
     it("Just returns a list of all activities in the database", async () => {
       // Create a fake activity to watch for
@@ -83,7 +83,7 @@ xdescribe("/api/activities", () => {
   });
 
   describe("PATCH /api/activities/:activityId (*)", () => {
-    xit("Anyone can update an activity (yes, this could lead to long term problems a la wikipedia)", async () => {
+    it("Anyone can update an activity (yes, this could lead to long term problems a la wikipedia)", async () => {
       const { token } = await createFakeUserWithToken("Allison");
       const fakeActivity = await createFakeActivity(
         "Run in Place",
@@ -108,7 +108,7 @@ xdescribe("/api/activities", () => {
       });
     });
 
-    xit("returns an error when updating an activity that does not exist", async () => {
+    it("returns an error when updating an activity that does not exist", async () => {
       const { token } = await createFakeUserWithToken("Barry");
 
       const newActivityData = {
@@ -124,7 +124,7 @@ xdescribe("/api/activities", () => {
       expectToHaveErrorMessage(response.body, ActivityNotFoundError(10000));
     });
 
-    xit("returns an error when changing an activity to have the name of an existing activity", async () => {
+    it("returns an error when changing an activity to have the name of an existing activity", async () => {
       const { token } = await createFakeUserWithToken("Jane");
       const fakeActivity = await createFakeActivity(
         "Beat Saber",

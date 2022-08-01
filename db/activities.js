@@ -27,8 +27,8 @@ async function getAllActivities() {
   try {
     const { rows: activities } = await client.query(`
       SELECT *
-      FROM activities
-    `, []);
+      FROM activities;
+    `);
     return activities;
   } catch (error) {
     console.error(error);

@@ -27,7 +27,6 @@ router.use(async (req, res, next) => {
 
       if (id) {
         req.user = await getUserById(id);
-        console.log("what is going on?!?!")
         next();
       }
     } catch ({ name, message }) {
